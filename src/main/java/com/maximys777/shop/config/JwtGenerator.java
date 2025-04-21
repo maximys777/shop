@@ -1,5 +1,6 @@
 package com.maximys777.shop.config;
 
+import com.maximys777.shop.config.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;

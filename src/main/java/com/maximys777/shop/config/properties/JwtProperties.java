@@ -1,4 +1,4 @@
-package com.maximys777.shop.config;
+package com.maximys777.shop.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

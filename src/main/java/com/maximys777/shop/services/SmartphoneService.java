@@ -3,12 +3,12 @@ package com.maximys777.shop.services;
 import com.maximys777.shop.dto.request.SmartphoneRequest;
 import com.maximys777.shop.dto.response.SmartphoneResponse;
 import com.maximys777.shop.entities.SmartphoneEntity;
+import com.maximys777.shop.globalexceptions.BadRequestException;
 import com.maximys777.shop.globalexceptions.NotFoundException;
 import com.maximys777.shop.globalmapper.GlobalMapper;
 import com.maximys777.shop.repositories.SmartphoneRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,31 +19,45 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class SmartphoneService {
     private final SmartphoneRepository smartphoneRepository;
 
     public SmartphoneResponse create(SmartphoneRequest request) {
+        boolean exists = smartphoneRepository.findAll()
+                .stream()
+                .anyMatch(e -> e.getProductTitle().equals(request.getProductTitle())
+                && e.getSmartphoneModel().equals(request.getSmartphoneModel()));
+        if (exists) {
+            throw new BadRequestException("Такой телефон уже существует.");
+        }
+
         SmartphoneEntity entity = new SmartphoneEntity();
+        log.info("Телефон {} + {} создан.", request.getProductTitle(), request.getSmartphoneModel());
         return saveOrUpdate(entity, request);
     }
 
-    public SmartphoneResponse update(Long id, SmartphoneRequest request) {
-        SmartphoneEntity entity = smartphoneRepository.findById(id).orElseThrow(() ->
+    public SmartphoneResponse update(Long productId, SmartphoneRequest request) {
+        SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Телефон не найден."));
+        log.info("Информация о телефоне {} + {} обновлена.", request.getProductTitle(), request.getSmartphoneModel());
+        return saveOrUpdate(entity, request);
+    }
+
+    public void deleteById(Long productId, SmartphoneRequest request) {
+        SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Смартфон не найден."));
-        return saveOrUpdate(entity, request);
+        log.info("Телефон {} + {} удалены.",  request.getProductTitle(), request.getSmartphoneModel());
+        smartphoneRepository.deleteById(productId);
     }
 
-    public void deleteById(Long id) {
-        smartphoneRepository.deleteById(id);
-    }
-
-    public SmartphoneResponse getById(Long id) {
-        return smartphoneRepository.findById(id)
+    public SmartphoneResponse getById(Long productId) {
+        return smartphoneRepository.findById(productId)
                 .map(GlobalMapper::mapToSmartphoneResponse)
                 .orElseThrow(() -> new NotFoundException("Смартфон не найден"));
     }
 
-    public List<SmartphoneResponse> getAllSmartphones(int page, int size, String sortBy, String sortDirection) {
+    public List<SmartphoneResponse> getAllSmartphone(int page, int size, String sortBy, String sortDirection) {
         PageRequest pageRequest = PageRequest.of(
                 page,
                 size,

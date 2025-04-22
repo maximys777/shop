@@ -38,7 +38,7 @@ public class ProductEntity {
     private BigDecimal productPrice;
 
     @Column(name = "product_available", nullable = false)
-    private Boolean productAvailable;
+    private String productAvailable;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_category", nullable = false)

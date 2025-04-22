@@ -85,6 +85,19 @@ public class GlobalMapper {
                 .build();
     }
 
+    public static ProductResponse mapToProductResponse(ProductEntity entity) {
+        return ProductResponse.builder()
+                .productId(entity.getProductId())
+                .productImage(entity.getProductImage())
+                .productTitle(entity.getProductTitle())
+                .productBrand(entity.getProductBrand())
+                .productDescription(entity.getProductDescription())
+                .productPrice(entity.getProductPrice())
+                .productAvailable(entity.getProductAvailable())
+                .productCategoryEnum(entity.getProductCategoryEnum())
+                .build();
+    }
+
     public static UserResponse mapToUserResponse(UserEntity entity) {
         return UserResponse.builder()
                 .userName(entity.getUserName())

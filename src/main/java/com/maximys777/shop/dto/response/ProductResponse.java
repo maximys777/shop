@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Builder
 @Setter
 @AllArgsConstructor
-public class IpadResponse {
+public class ProductResponse {
     private Long productId;
     private String productImage;
     private String productTitle;
@@ -19,12 +19,4 @@ public class IpadResponse {
     private BigDecimal productPrice;
     private String productAvailable;
     private ProductCategoryEnum productCategoryEnum;
-
-    private String ipadModel;
-    private String ipadColor;
-    private String ipadProcessor;
-    private Integer ipadCapacity;
-    private String ipadOs;
-    private Integer ipadDiagonal;
-    private Integer ipadModelYear;
 }

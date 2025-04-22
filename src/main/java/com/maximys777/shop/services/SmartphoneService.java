@@ -2,6 +2,7 @@ package com.maximys777.shop.services;
 
 import com.maximys777.shop.dto.request.SmartphoneRequest;
 import com.maximys777.shop.dto.response.SmartphoneResponse;
+import com.maximys777.shop.entities.ProductCategoryEnum;
 import com.maximys777.shop.entities.SmartphoneEntity;
 import com.maximys777.shop.globalexceptions.BadRequestException;
 import com.maximys777.shop.globalexceptions.NotFoundException;
@@ -13,7 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,32 +27,109 @@ import java.util.stream.Collectors;
 @Log4j2
 public class SmartphoneService {
     private final SmartphoneRepository smartphoneRepository;
+    private final CloudinaryService cloudinaryService;
 
-    public SmartphoneResponse create(SmartphoneRequest request) {
+    public SmartphoneResponse create(MultipartFile productImage,
+                                     String productTitle,
+                                     String productBrand,
+                                     String productDescription,
+                                     BigDecimal productPrice,
+                                     String productAvailable,
+                                     ProductCategoryEnum productCategoryEnum,
+                                     String smartphoneModel,
+                                     String smartphoneOs,
+                                     Integer smartphoneStorage,
+                                     Integer smartphoneRam,
+                                     String smartphoneColor,
+                                     Integer batteryCapacity,
+                                     String batteryUnit,
+                                     Integer smartphoneModelYear) {
+
         boolean exists = smartphoneRepository.findAll()
                 .stream()
-                .anyMatch(e -> e.getProductTitle().equals(request.getProductTitle())
-                && e.getSmartphoneModel().equals(request.getSmartphoneModel()));
+                .anyMatch(e -> e.getProductTitle().equals(productTitle)
+                && e.getSmartphoneModel().equals(smartphoneModel));
         if (exists) {
             throw new BadRequestException("Такой телефон уже существует.");
         }
 
+        String imageUrl = cloudinaryService.uploadFile(productImage, "product/smartphones", "image").get("secure_url");
+
         SmartphoneEntity entity = new SmartphoneEntity();
-        log.info("Телефон {} + {} создан.", request.getProductTitle(), request.getSmartphoneModel());
-        return saveOrUpdate(entity, request);
+        SmartphoneRequest request = new SmartphoneRequest(imageUrl, productTitle, productBrand, productDescription, productPrice,
+                productAvailable, productCategoryEnum, smartphoneModel, smartphoneOs,
+                smartphoneStorage, smartphoneRam, smartphoneColor, batteryCapacity,
+                batteryUnit, smartphoneModelYear);
+
+        SmartphoneResponse response = saveOrUpdate(entity, request);
+
+        log.info("Телефон {} + {} создан.", entity.getProductTitle(), entity.getSmartphoneModel());
+        return response;
     }
 
-    public SmartphoneResponse update(Long productId, SmartphoneRequest request) {
+    public SmartphoneResponse update(Long productId,
+                                     MultipartFile productImage,
+                                     String productTitle,
+                                     String productBrand,
+                                     String productDescription,
+                                     BigDecimal productPrice,
+                                     String productAvailable,
+                                     ProductCategoryEnum productCategoryEnum,
+                                     String smartphoneModel,
+                                     String smartphoneOs,
+                                     Integer smartphoneStorage,
+                                     Integer smartphoneRam,
+                                     String smartphoneColor,
+                                     Integer batteryCapacity,
+                                     String batteryUnit,
+                                     Integer smartphoneModelYear) {
         SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Телефон не найден."));
-        log.info("Информация о телефоне {} + {} обновлена.", request.getProductTitle(), request.getSmartphoneModel());
+
+        String imageUrl = entity.getProductImage();
+
+        if (productImage != null && !productImage.isEmpty()) {
+            String oldImageUrl = entity.getProductImage();
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                String publicId = extractPublicIdFromUrl(oldImageUrl);
+                log.info("Удаляю старое изображение: {}", publicId);
+                cloudinaryService.deleteFile(publicId);
+            }
+
+            imageUrl = cloudinaryService.uploadFile(productImage, "product/smartphones", "image").get("secure_url");
+            entity.setProductImage(imageUrl);
+        }
+
+
+
+
+        SmartphoneRequest request = new SmartphoneRequest(
+                imageUrl,
+                productTitle != null ? productTitle : entity.getProductTitle(),
+                productBrand != null ? productBrand : entity.getProductBrand(),
+                productDescription != null ? productDescription : entity.getProductDescription(),
+                productPrice != null ? productPrice : entity.getProductPrice(),
+                productAvailable != null ? productAvailable : entity.getProductAvailable(),
+                productCategoryEnum != null ? productCategoryEnum : entity.getProductCategoryEnum(),
+                smartphoneModel != null ? smartphoneModel : entity.getSmartphoneModel(),
+                smartphoneOs != null ? smartphoneOs : entity.getSmartphoneOs(),
+                smartphoneStorage != null ? smartphoneStorage : entity.getSmartphoneStorage(),
+                smartphoneRam != null ? smartphoneRam : entity.getSmartphoneRam(),
+                smartphoneColor != null ? smartphoneColor : entity.getSmartphoneColor(),
+                batteryCapacity != null ? batteryCapacity : entity.getBatteryCapacity(),
+                batteryUnit != null ? batteryUnit : entity.getBatteryUnit(),
+                smartphoneModelYear != null ? smartphoneModelYear : entity.getSmartphoneModelYear()
+        );
+
+        log.info("Информация о телефоне {} обновлена.", request.getProductTitle());
         return saveOrUpdate(entity, request);
     }
 
-    public void deleteById(Long productId, SmartphoneRequest request) {
+    public void deleteById(Long productId) {
         SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
-                new NotFoundException("Смартфон не найден."));
-        log.info("Телефон {} + {} удалены.",  request.getProductTitle(), request.getSmartphoneModel());
+                new NotFoundException("Смартфон с ID " + productId + " не найден.")
+        );
+        log.info("Телефон {} + {} удален.", entity.getProductTitle(), entity.getSmartphoneModel());
         smartphoneRepository.deleteById(productId);
     }
 
@@ -104,4 +186,36 @@ public class SmartphoneService {
 
         return GlobalMapper.mapToSmartphoneResponse(smartphoneRepository.save(entity));
     }
+
+    public String extractPublicIdFromUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            String path = uri.getPath(); // /.../upload/v1234567890/folder/filename.jpg
+
+            // Получаем путь после "upload/"
+            String[] parts = path.split("/upload/");
+            if (parts.length < 2) return null;
+
+            String publicPath = parts[1]; // v1234567890/folder/filename.jpg
+
+            // Убираем версию (v123456...)
+            String[] publicParts = publicPath.split("/", 2);
+            if (publicParts.length < 2) return null;
+
+            String publicIdWithExtension = publicParts[1]; // folder/filename.jpg
+
+            // Убираем расширение
+            int dotIndex = publicIdWithExtension.lastIndexOf('.');
+            if (dotIndex != -1) {
+                return publicIdWithExtension.substring(0, dotIndex); // folder/filename
+            }
+
+            return publicIdWithExtension;
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Невозможно извлечь public_id из URL", e);
+        }
+    }
+
+
 }

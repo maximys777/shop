@@ -17,7 +17,7 @@ public class SmartphoneResponse {
     private String productBrand;
     private String productDescription;
     private BigDecimal productPrice;
-    private Boolean productAvailable;
+    private String productAvailable;
     private ProductCategoryEnum productCategoryEnum;
 
     private String smartphoneModel;

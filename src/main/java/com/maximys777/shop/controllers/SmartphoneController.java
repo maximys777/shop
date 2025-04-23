@@ -72,7 +72,7 @@ public class SmartphoneController {
         return ResponseEntity.ok(updateSmartphone);
     }
 
-    @GetMapping("/get-by-id/{productId}")
+    @GetMapping("/get-by-id-{productId}")
     public ResponseEntity<SmartphoneResponse> getById(@PathVariable Long productId) {
         return ResponseEntity.ok(smartphoneService.getById(productId));
     }
@@ -87,7 +87,7 @@ public class SmartphoneController {
         return ResponseEntity.ok(smartphoneService.getAllSmartphone(page, size, sortBy, sortDirection));
     }
 
-    @GetMapping("/{productTitle}")
+    @GetMapping("/search-{productTitle}")
     public ResponseEntity<List<SmartphoneResponse>> searchByProductTitle(
             @PathVariable String productTitle,
             @RequestParam(defaultValue = "0") int page,

@@ -63,7 +63,7 @@ public class IpadController {
         return ResponseEntity.ok(ipadUpdate);
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/get-by-id-{productId}")
     public ResponseEntity<IpadResponse> getById(@PathVariable Long productId) {
         return ResponseEntity.ok(ipadService.getById(productId));
     }
@@ -78,7 +78,7 @@ public class IpadController {
         return ResponseEntity.ok(ipadService.getAllIpad(page, size, sortBy, sortDirection));
     }
 
-    @GetMapping("/{productTitle}")
+    @GetMapping("/search-{productTitle}")
     public ResponseEntity<List<IpadResponse>> getByTitle(@PathVariable String productTitle,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size,

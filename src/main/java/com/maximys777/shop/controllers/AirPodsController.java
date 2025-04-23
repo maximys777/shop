@@ -59,7 +59,7 @@ public class AirPodsController {
     return ResponseEntity.ok(updateAirPods);
     }
 
-    @GetMapping("/get-by-id/{productId}")
+    @GetMapping("/get-by-id-{productId}")
     public ResponseEntity<AirPodsResponse> getById(@PathVariable Long productId) {
         return ResponseEntity.ok(airPodsService.findById(productId));
     }
@@ -74,7 +74,7 @@ public class AirPodsController {
         return ResponseEntity.ok(airPodsService.findAllAirPods(page, size, sortBy, sortDirection));
     }
 
-    @GetMapping("/{productTitle}")
+    @GetMapping("/search-{productTitle}")
     public ResponseEntity<List<AirPodsResponse>> getByTitle(@PathVariable String productTitle,
                                                       @RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size,

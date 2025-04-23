@@ -87,7 +87,7 @@ public class LaptopController {
         return ResponseEntity.ok(laptopService.findAllLaptop(page, size, sortBy, sortDirection));
     }
 
-    @GetMapping("/{productTitle}")
+    @GetMapping("/search-{productTitle}")
     public ResponseEntity<List<LaptopResponse>> getByTitle(
             @PathVariable String productTitle,
             @RequestParam(defaultValue = "0") int page,

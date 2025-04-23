@@ -3,12 +3,14 @@ package com.maximys777.shop.dto.response;
 import com.maximys777.shop.entities.ProductCategoryEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Builder
 @Setter
+@Getter
 @AllArgsConstructor
 public class IpadResponse {
     private Long productId;

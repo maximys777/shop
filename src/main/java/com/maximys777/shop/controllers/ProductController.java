@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
@@ -22,7 +22,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.findByProductId(productId));
     }
 
-    @GetMapping("/")
+    @GetMapping("/get-all-product")
     public ResponseEntity<List<ProductResponse>> getAllProducts(@RequestParam int page,
                                                                 @RequestParam int size,
                                                                 @RequestParam String sortBy,

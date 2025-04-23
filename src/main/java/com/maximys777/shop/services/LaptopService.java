@@ -3,6 +3,7 @@ package com.maximys777.shop.services;
 import com.maximys777.shop.dto.request.LaptopRequest;
 import com.maximys777.shop.dto.response.LaptopResponse;
 import com.maximys777.shop.entities.LaptopEntity;
+import com.maximys777.shop.entities.ProductCategoryEnum;
 import com.maximys777.shop.globalexceptions.BadRequestException;
 import com.maximys777.shop.globalexceptions.NotFoundException;
 import com.maximys777.shop.globalmapper.GlobalMapper;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,36 +25,109 @@ import java.util.stream.Collectors;
 @Log4j2
 public class LaptopService {
     private final LaptopRepository laptopRepository;
+    private final CloudinaryService cloudinaryService;
 
-    public LaptopResponse create(LaptopRequest request) {
+    public LaptopResponse create(MultipartFile productImage,
+                                 String productTitle,
+                                 String productBrand,
+                                 String productDescription,
+                                 BigDecimal productPrice,
+                                 String productAvailable,
+                                 ProductCategoryEnum productCategoryEnum,
+                                 String laptopModel,
+                                 Double laptopDiagonal,
+                                 String laptopProcessor,
+                                 String laptopOs,
+                                 Integer laptopRam,
+                                 Integer laptopStorage,
+                                 String laptopGraphCard,
+                                 String laptopColor,
+                                 Double laptopBattery,
+                                 Integer laptopModelYear) {
         boolean exists = laptopRepository.findAll()
                 .stream()
-                .anyMatch(e -> e.getProductTitle().equals(request.getProductTitle())
-                && e.getLaptopModel().equals(request.getLaptopModel()));
+                .anyMatch(e -> e.getProductTitle().equals(productTitle));
         if (exists) {
             throw new BadRequestException("Такой ноутбук уже существует.");
         }
 
+        String imageUrl = cloudinaryService.uploadFile(productImage, "product/laptops", "image").get("secure_url");
         LaptopEntity entity = new LaptopEntity();
-        log.info("Ноутбук {} + {} создан.", request.getProductTitle(), request.getLaptopModel());
-        return saveOrUpdate(entity, request);
+        LaptopRequest request = new LaptopRequest(imageUrl, productTitle, productBrand, productDescription, productPrice,
+                productAvailable, productCategoryEnum, laptopModel, laptopDiagonal, laptopProcessor, laptopOs,
+                laptopRam, laptopStorage, laptopGraphCard, laptopColor, laptopBattery, laptopModelYear);
+
+        LaptopResponse response = saveOrUpdate(entity, request);
+        log.info("Ноутбук {} создан.", entity.getProductTitle());
+        return response;
     }
 
-    public LaptopResponse update(Long productId, LaptopRequest request) {
+    public LaptopResponse update(Long productId,
+                                 MultipartFile productImage,
+                                 String productTitle,
+                                 String productBrand,
+                                 String productDescription,
+                                 BigDecimal productPrice,
+                                 String productAvailable,
+                                 ProductCategoryEnum productCategoryEnum,
+                                 String laptopModel,
+                                 Double laptopDiagonal,
+                                 String laptopProcessor,
+                                 String laptopOs,
+                                 Integer laptopRam,
+                                 Integer laptopStorage,
+                                 String laptopGraphCard,
+                                 String laptopColor,
+                                 Double laptopBattery,
+                                 Integer laptopModelYear) {
         LaptopEntity entity = laptopRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Ноутбук не найден."));
-        log.info("Информация о ноутбуке {} + {} обновлена.", request.getProductTitle(), request.getLaptopModel());
-        return saveOrUpdate(entity, request);
-    }
 
-    public void deleteById(Long productId, LaptopRequest request) {
+        String imageUrl = entity.getProductImage();
+        if (productImage != null && !productImage.isEmpty()) {
+            String oldImageUrl = entity.getProductImage();
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                String publicId = cloudinaryService.extractPublicIdFromUrl(oldImageUrl);
+                log.info("Удалено старое изображение товара {}", productTitle);
+                cloudinaryService.deleteFile(publicId);
+            }
+
+            imageUrl = cloudinaryService.uploadFile(productImage, "product/laptops", "image").get("secure_url");
+            entity.setProductImage(imageUrl);
+        }
+
+        LaptopRequest request = new LaptopRequest(
+                imageUrl,
+                productTitle != null ? productTitle : entity.getProductTitle(),
+                productBrand != null ? productBrand : entity.getProductBrand(),
+                productDescription != null ? productDescription : entity.getProductDescription(),
+                productPrice != null ? productPrice : entity.getProductPrice(),
+                productAvailable != null ? productAvailable : entity.getProductAvailable(),
+                productCategoryEnum != null ? productCategoryEnum : entity.getProductCategoryEnum(),
+                laptopModel != null ? laptopModel : entity.getLaptopModel(),
+                laptopDiagonal != null ? laptopDiagonal : entity.getLaptopDiagonal(),
+                laptopProcessor != null ? laptopProcessor : entity.getLaptopProcessor(),
+                laptopOs != null ? laptopOs : entity.getLaptopOs(),
+                laptopRam != null ? laptopRam : entity.getLaptopRam(),
+                laptopStorage != null ? laptopStorage : entity.getLaptopStorage(),
+                laptopGraphCard != null ? laptopGraphCard : entity.getLaptopGraphCard(),
+                laptopColor != null ? laptopColor : entity.getLaptopColor(),
+                laptopBattery != null ? laptopBattery : entity.getLaptopBattery(),
+                laptopModelYear != null ? laptopModelYear : entity.getLaptopModelYear()
+        );
+        log.info("Информация о ноутбуке {} обновлена.", request.getProductTitle());
+        return saveOrUpdate(entity, request);
+}
+
+    public void deleteById(Long productId) {
         LaptopEntity entity = laptopRepository.findById(productId).orElseThrow(() ->
-                new NotFoundException("Ноутбук не найден."));
-        log.info("Наушники {} + {} удалены.",  request.getProductTitle(), request.getLaptopModel());
+                        new NotFoundException("Ноутбук с ID " + productId + " не найден.")
+        );
+        log.info("Ноутбук {} удален.", entity.getProductTitle());
         laptopRepository.deleteById(productId);
     }
 
-    public LaptopResponse findById(Long productId) {
+    public LaptopResponse getById(Long productId) {
         return laptopRepository.findById(productId)
                 .map(GlobalMapper::mapToLaptopResponse)
                 .orElseThrow(() -> new NotFoundException("Ноутбук не найден."));
@@ -105,4 +181,6 @@ public class LaptopService {
 
         return GlobalMapper.mapToLaptopResponse(laptopRepository.save(entity));
     }
+
+
 }

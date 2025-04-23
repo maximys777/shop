@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,8 +45,7 @@ public class SmartphoneService {
 
         boolean exists = smartphoneRepository.findAll()
                 .stream()
-                .anyMatch(e -> e.getProductTitle().equals(productTitle)
-                && e.getSmartphoneModel().equals(smartphoneModel));
+                .anyMatch(e -> e.getProductTitle().equals(productTitle));
         if (exists) {
             throw new BadRequestException("Такой телефон уже существует.");
         }

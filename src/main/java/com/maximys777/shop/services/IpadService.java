@@ -37,9 +37,9 @@ public class IpadService {
                                String ipadModel,
                                String ipadColor,
                                String ipadProcessor,
-                               Integer ipadCapacity,
+                               String ipadCapacity,
                                String ipadOs,
-                               Integer ipadDiaonal,
+                               Double ipadDiagonal,
                                Integer ipadModelYear) {
         boolean exists = ipadRepository.findAll()
                 .stream()
@@ -52,7 +52,7 @@ public class IpadService {
         IpadEntity entity = new IpadEntity();
         IpadRequest request = new IpadRequest(imageUrl, productTitle, productBrand, productDescription, productPrice,
                 productAvailable, productCategoryEnum, ipadModel, ipadColor, ipadProcessor, ipadCapacity,
-                ipadOs, ipadDiaonal, ipadModelYear);
+                ipadOs, ipadDiagonal, ipadModelYear);
 
         IpadResponse response = saveOrUpdate(entity, request);
         log.info("Планшет {} создан.", entity.getProductTitle());
@@ -70,9 +70,9 @@ public class IpadService {
                                String ipadModel,
                                String ipadColor,
                                String ipadProcessor,
-                               Integer ipadCapacity,
+                               String ipadCapacity,
                                String ipadOs,
-                               Integer ipadDiagonal,
+                               Double ipadDiagonal,
                                Integer ipadModelYear) {
         IpadEntity entity = ipadRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Планшет не найден."));
@@ -111,14 +111,6 @@ public class IpadService {
             return saveOrUpdate(entity, request);
     }
 
-    public void deleteById(Long productId, IpadRequest request) {
-        IpadEntity entity = ipadRepository.findById(productId).orElseThrow(() ->
-                        new NotFoundException("Планшет с ID " + productId + " не найден.")
-        );
-        log.info("Планшет {} удален.",  request.getProductTitle());
-        ipadRepository.deleteById(productId);
-    }
-
     public IpadResponse getById(Long productId) {
         return ipadRepository.findById(productId)
                 .map(GlobalMapper::mapToIpadResponse)
@@ -149,6 +141,14 @@ public class IpadService {
         return ipadPage.stream()
                 .map(GlobalMapper::mapToIpadResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteById(Long productId) {
+        IpadEntity entity = ipadRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Планшет с ID " + productId + " не найден.")
+        );
+        log.info("Планшет {} удален.",  entity.getProductTitle());
+        ipadRepository.deleteById(productId);
     }
 
 

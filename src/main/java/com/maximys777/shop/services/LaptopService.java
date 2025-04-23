@@ -39,10 +39,10 @@ public class LaptopService {
                                  String laptopProcessor,
                                  String laptopOs,
                                  Integer laptopRam,
-                                 Integer laptopStorage,
+                                 String laptopStorage,
                                  String laptopGraphCard,
                                  String laptopColor,
-                                 Double laptopBattery,
+                                 String laptopBattery,
                                  Integer laptopModelYear) {
         boolean exists = laptopRepository.findAll()
                 .stream()
@@ -75,10 +75,10 @@ public class LaptopService {
                                  String laptopProcessor,
                                  String laptopOs,
                                  Integer laptopRam,
-                                 Integer laptopStorage,
+                                 String laptopStorage,
                                  String laptopGraphCard,
                                  String laptopColor,
-                                 Double laptopBattery,
+                                 String laptopBattery,
                                  Integer laptopModelYear) {
         LaptopEntity entity = laptopRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Ноутбук не найден."));
@@ -119,14 +119,6 @@ public class LaptopService {
         return saveOrUpdate(entity, request);
 }
 
-    public void deleteById(Long productId) {
-        LaptopEntity entity = laptopRepository.findById(productId).orElseThrow(() ->
-                        new NotFoundException("Ноутбук с ID " + productId + " не найден.")
-        );
-        log.info("Ноутбук {} удален.", entity.getProductTitle());
-        laptopRepository.deleteById(productId);
-    }
-
     public LaptopResponse getById(Long productId) {
         return laptopRepository.findById(productId)
                 .map(GlobalMapper::mapToLaptopResponse)
@@ -157,6 +149,14 @@ public class LaptopService {
         return laptopPage.stream()
                 .map(GlobalMapper::mapToLaptopResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteById(Long productId) {
+        LaptopEntity entity = laptopRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Ноутбук с ID " + productId + " не найден.")
+        );
+        log.info("Ноутбук {} удален.", entity.getProductTitle());
+        laptopRepository.deleteById(productId);
     }
 
     private LaptopResponse saveOrUpdate(LaptopEntity entity, LaptopRequest request) {

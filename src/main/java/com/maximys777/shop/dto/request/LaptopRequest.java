@@ -26,9 +26,9 @@ public class LaptopRequest {
     private String laptopProcessor;
     private String laptopOs;
     private Integer laptopRam;
-    private Integer laptopStorage;
+    private String laptopStorage;
     private String laptopGraphCard;
     private String laptopColor;
-    private Double laptopBattery;
+    private String laptopBattery;
     private Integer laptopModelYear;
 }

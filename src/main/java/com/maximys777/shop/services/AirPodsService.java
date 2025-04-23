@@ -102,14 +102,6 @@ public class AirPodsService {
         return saveOrUpdate(entity, request);
     }
 
-    public void deleteById(Long productId, AirPodsRequest request) {
-        AirPodsEntity entity = airPodsRepository.findById(productId).orElseThrow(() ->
-                        new NotFoundException("Наушники с ID " + productId + " не найден.")
-        );
-        log.info("Наушники {} удалены.", request.getProductTitle());
-        airPodsRepository.deleteById(productId);
-    }
-
     public AirPodsResponse findById(Long productId) {
         return airPodsRepository.findById(productId)
                 .map(GlobalMapper::mapToAirPodsResponse)
@@ -140,6 +132,14 @@ public class AirPodsService {
         return airPodsPage.stream()
                 .map(GlobalMapper::mapToAirPodsResponse)
                     .collect(Collectors.toList());
+    }
+
+    public void deleteById(Long productId) {
+        AirPodsEntity entity = airPodsRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Наушники с ID " + productId + " не найден.")
+        );
+        log.info("Наушники {} удалены.", entity.getProductTitle());
+        airPodsRepository.deleteById(productId);
     }
 
     private AirPodsResponse saveOrUpdate(AirPodsEntity entity, AirPodsRequest request) {

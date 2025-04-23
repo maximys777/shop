@@ -33,7 +33,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/auth/register", "/auth/login", "/smartphone/**").permitAll()
+                                .requestMatchers("/auth/register", "/auth/login", "/smartphone/**", "/laptop/**", "/airpods/**", "/ipad/**" ).permitAll()
 //                                .requestMatchers("/register.html", "/login.html", "/profile.html", "/exercise.html").permitAll() // заменить на магазинные
                                 .anyRequest().authenticated())
 //                .oauth2Login(Customizer.withDefaults()) В будущем для входа через Gmail кнопку

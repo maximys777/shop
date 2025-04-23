@@ -36,7 +36,7 @@ public class SmartphoneService {
                                      ProductCategoryEnum productCategoryEnum,
                                      String smartphoneModel,
                                      String smartphoneOs,
-                                     Integer smartphoneStorage,
+                                     String smartphoneStorage,
                                      Integer smartphoneRam,
                                      String smartphoneColor,
                                      Integer batteryCapacity,
@@ -74,7 +74,7 @@ public class SmartphoneService {
                                      ProductCategoryEnum productCategoryEnum,
                                      String smartphoneModel,
                                      String smartphoneOs,
-                                     Integer smartphoneStorage,
+                                     String smartphoneStorage,
                                      Integer smartphoneRam,
                                      String smartphoneColor,
                                      Integer batteryCapacity,
@@ -119,14 +119,6 @@ public class SmartphoneService {
         return saveOrUpdate(entity, request);
     }
 
-    public void deleteById(Long productId) {
-        SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
-                new NotFoundException("Смартфон с ID " + productId + " не найден.")
-        );
-        log.info("Телефон {} удален.", entity.getProductTitle());
-        smartphoneRepository.deleteById(productId);
-    }
-
     public SmartphoneResponse getById(Long productId) {
         return smartphoneRepository.findById(productId)
                 .map(GlobalMapper::mapToSmartphoneResponse)
@@ -157,6 +149,14 @@ public class SmartphoneService {
         return smartphonePage.stream()
                 .map(GlobalMapper::mapToSmartphoneResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteById(Long productId) {
+        SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Смартфон с ID " + productId + " не найден.")
+        );
+        log.info("Телефон {} удален.", entity.getProductTitle());
+        smartphoneRepository.deleteById(productId);
     }
 
 

@@ -21,7 +21,7 @@ public class SmartphoneEntity extends ProductEntity {
     private String smartphoneOs;
 
     @Column(name = "smartphone_storage")
-    private Integer smartphoneStorage;
+    private String smartphoneStorage;
 
     @Column(name = "smartphone_ram")
     private Integer smartphoneRam;

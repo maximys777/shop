@@ -24,13 +24,13 @@ public class IpadEntity extends ProductEntity {
     private String ipadProcessor;
 
     @Column(name = "ipad_capacity")
-    private Integer ipadCapacity;
+    private String ipadCapacity;
 
     @Column(name = "ipad_os")
     private String ipadOs;
 
     @Column(name = "ipad_diagonal")
-    private Integer ipadDiagonal;
+    private Double ipadDiagonal;
 
     @Column(name = "ipad_model_year")
     private Integer ipadModelYear;

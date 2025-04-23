@@ -28,7 +28,7 @@ public class SmartphoneController {
             @RequestParam("productCategoryEnum") ProductCategoryEnum productCategoryEnum,
             @RequestParam("smartphoneModel") String smartphoneModel,
             @RequestParam("smartphoneOs") String smartphoneOs,
-            @RequestParam("smartphoneStorage") Integer smartphoneStorage,
+            @RequestParam("smartphoneStorage") String smartphoneStorage,
             @RequestParam("smartphoneRam") Integer smartphoneRam,
             @RequestParam("smartphoneColor") String smartphoneColor,
             @RequestParam("batteryCapacity") Integer batteryCapacity,
@@ -57,14 +57,18 @@ public class SmartphoneController {
                                                      @RequestParam(value = "productCategoryEnum", required = false) ProductCategoryEnum productCategoryEnum,
                                                      @RequestParam(value = "smartphoneModel", required = false) String smartphoneModel,
                                                      @RequestParam(value = "smartphoneOs", required = false) String smartphoneOs,
-                                                     @RequestParam(value = "smartphoneStorage", required = false) Integer smartphoneStorage,
+                                                     @RequestParam(value = "smartphoneStorage", required = false) String smartphoneStorage,
                                                      @RequestParam(value = "smartphoneRam", required = false) Integer smartphoneRam,
                                                      @RequestParam(value = "smartphoneColor", required = false) String smartphoneColor,
                                                      @RequestParam(value = "batteryCapacity", required = false) Integer batteryCapacity,
                                                      @RequestParam(value = "batteryUnit", required = false) String batteryUnit,
                                                      @RequestParam(value = "smartphoneModelYear", required = false) Integer smartphoneModelYear) {
 
-        SmartphoneResponse updateSmartphone = smartphoneService.update(productId, productImage, productTitle, productBrand, productDescription, productPrice, productAvailable, productCategoryEnum, smartphoneModel, smartphoneOs, smartphoneStorage, smartphoneRam, smartphoneColor, batteryCapacity, batteryUnit, smartphoneModelYear);
+        SmartphoneResponse updateSmartphone = smartphoneService.update(productId, productImage, productTitle,
+                                                                       productBrand, productDescription, productPrice,
+                                                                       productAvailable, productCategoryEnum, smartphoneModel,
+                                                                       smartphoneOs, smartphoneStorage, smartphoneRam,
+                                                                       smartphoneColor, batteryCapacity, batteryUnit, smartphoneModelYear);
         return ResponseEntity.ok(updateSmartphone);
     }
 

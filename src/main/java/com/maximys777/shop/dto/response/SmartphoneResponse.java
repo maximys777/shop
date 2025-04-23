@@ -22,7 +22,7 @@ public class SmartphoneResponse {
 
     private String smartphoneModel;
     private String smartphoneOs;
-    private Integer smartphoneStorage;
+    private String smartphoneStorage;
     private Integer smartphoneRam;
     private String smartphoneColor;
     private Integer batteryCapacity;

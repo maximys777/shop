@@ -29,7 +29,7 @@ public class LaptopEntity extends  ProductEntity {
     private Integer laptopRam;
 
     @Column(name = "laptop_storage")
-    private Integer laptopStorage;
+    private String laptopStorage;
 
     @Column(name = "laptop_graph_card")
     private String laptopGraphCard;
@@ -38,7 +38,7 @@ public class LaptopEntity extends  ProductEntity {
     private String laptopColor;
 
     @Column(name = "laptop_battery")
-    private Double laptopBattery;
+    private String laptopBattery;
 
     @Column(name = "laptop_model_year")
     private Integer laptopModelYear;

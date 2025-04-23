@@ -23,8 +23,8 @@ public class IpadResponse {
     private String ipadModel;
     private String ipadColor;
     private String ipadProcessor;
-    private Integer ipadCapacity;
+    private String ipadCapacity;
     private String ipadOs;
-    private Integer ipadDiagonal;
+    private Double ipadDiagonal;
     private Integer ipadModelYear;
 }

@@ -63,7 +63,7 @@ public class SmartphoneService {
 
         SmartphoneResponse response = saveOrUpdate(entity, request);
 
-        log.info("Телефон {} + {} создан.", entity.getProductTitle(), entity.getSmartphoneModel());
+        log.info("Телефон {} создан.", entity.getProductTitle());
         return response;
     }
 
@@ -91,17 +91,14 @@ public class SmartphoneService {
         if (productImage != null && !productImage.isEmpty()) {
             String oldImageUrl = entity.getProductImage();
             if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-                String publicId = extractPublicIdFromUrl(oldImageUrl);
-                log.info("Удаляю старое изображение: {}", publicId);
+                String publicId = cloudinaryService.extractPublicIdFromUrl(oldImageUrl);
+                log.info("Удалено старое изображение товара {}", productTitle);
                 cloudinaryService.deleteFile(publicId);
             }
 
             imageUrl = cloudinaryService.uploadFile(productImage, "product/smartphones", "image").get("secure_url");
             entity.setProductImage(imageUrl);
         }
-
-
-
 
         SmartphoneRequest request = new SmartphoneRequest(
                 imageUrl,
@@ -129,7 +126,7 @@ public class SmartphoneService {
         SmartphoneEntity entity = smartphoneRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Смартфон с ID " + productId + " не найден.")
         );
-        log.info("Телефон {} + {} удален.", entity.getProductTitle(), entity.getSmartphoneModel());
+        log.info("Телефон {} удален.", entity.getProductTitle());
         smartphoneRepository.deleteById(productId);
     }
 
@@ -186,36 +183,5 @@ public class SmartphoneService {
 
         return GlobalMapper.mapToSmartphoneResponse(smartphoneRepository.save(entity));
     }
-
-    public String extractPublicIdFromUrl(String url) {
-        try {
-            URI uri = new URI(url);
-            String path = uri.getPath(); // /.../upload/v1234567890/folder/filename.jpg
-
-            // Получаем путь после "upload/"
-            String[] parts = path.split("/upload/");
-            if (parts.length < 2) return null;
-
-            String publicPath = parts[1]; // v1234567890/folder/filename.jpg
-
-            // Убираем версию (v123456...)
-            String[] publicParts = publicPath.split("/", 2);
-            if (publicParts.length < 2) return null;
-
-            String publicIdWithExtension = publicParts[1]; // folder/filename.jpg
-
-            // Убираем расширение
-            int dotIndex = publicIdWithExtension.lastIndexOf('.');
-            if (dotIndex != -1) {
-                return publicIdWithExtension.substring(0, dotIndex); // folder/filename
-            }
-
-            return publicIdWithExtension;
-
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Невозможно извлечь public_id из URL", e);
-        }
-    }
-
 
 }

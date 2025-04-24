@@ -3,6 +3,9 @@ package com.maximys777.shop.globalmapper;
 import com.maximys777.shop.dto.response.*;
 import com.maximys777.shop.entities.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class GlobalMapper {
     public static SmartphoneResponse mapToSmartphoneResponse(SmartphoneEntity entity) {
         return SmartphoneResponse.builder()

@@ -109,4 +109,38 @@ public class GlobalMapper {
                 .userRole(entity.getUserRole().name())
                 .build();
     }
+
+    public static CartResponse mapToCartResponse(CartEntity entity) {
+        return CartResponse.builder()
+                .cartId(entity.getCartId())
+                .userId(entity.getUser().getUserId())
+                .cartItems(entity.getItem().stream()
+                        .map(item -> CartItemResponse.builder()
+                                .cartItemId(item.getCartItemId())
+                                .cartItemQuantity(item.getCartItemQuantity())
+                                .cartItemPrice(item.getCartItemPrice())
+                                .product(ProductResponse.builder()
+                                        .productId(item.getProduct().getProductId())
+                                        .productImage(item.getProduct().getProductImage())
+                                        .productTitle(item.getProduct().getProductTitle())
+                                        .productPrice(item.getProduct().getProductPrice())
+                                        .build())
+                                .build())
+                        .toList())
+                .build();
+    }
+
+    public static CartItemResponse mapToCartItemResponse(CartItemEntity entity) {
+        return CartItemResponse.builder()
+                .cartItemId(entity.getCartItemId())
+                .cartItemQuantity(entity.getCartItemQuantity())
+                .cartItemPrice(entity.getCartItemPrice())
+                .product(ProductResponse.builder()
+                        .productId(entity.getProduct().getProductId())
+                        .productImage(entity.getProduct().getProductImage())
+                        .productTitle(entity.getProduct().getProductTitle())
+                        .productPrice(entity.getProduct().getProductPrice())
+                        .build())
+                .build();
+    }
 }

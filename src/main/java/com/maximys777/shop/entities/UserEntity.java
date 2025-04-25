@@ -37,4 +37,7 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
     private RoleEnum userRole;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CartEntity cart;
 }
